@@ -1,4 +1,4 @@
-import os
+﻿import os
 import asyncio
 import time
 import random
@@ -22,7 +22,7 @@ async def register(update: Update, context: ContextTypes.DEFAULT_TYPE):
     phone = context.args[0]
     username = update.effective_user.username
     players[username] = {"phone": phone, "taps": 0, "first5": 0}
-    await update.message.reply_text(f"? Registered @{username} ({phone})")
+    await update.message.reply_text(f"✅ Registered @{username} ({phone})")
 
 async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Start tapping round (admin only)"""
@@ -31,7 +31,7 @@ async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
     admins = [admin.user.id for admin in await context.bot.get_chat_administrators(chat_id)]
 
     if update.effective_user.id not in admins:
-        await update.message.reply_text("? Only admins can start the game.")
+        await update.message.reply_text("❌ Only admins can start the game.")
         return
 
     if round_active:
@@ -44,16 +44,16 @@ async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     round_active = True
     start_time = time.time()
-    await update.message.reply_text("?? Game starts in 5 seconds...")
+    await update.message.reply_text("🎮 Game starts in 5 seconds...")
     await asyncio.sleep(5)
 
-    button = InlineKeyboardButton("?? TAP", callback_data="tap")
+    button = InlineKeyboardButton("👆 TAP", callback_data="tap")
     markup = InlineKeyboardMarkup([[button]])
-    msg = await update.message.reply_text("?? Start tapping! 10 seconds go!", reply_markup=markup)
+    msg = await update.message.reply_text("🚀 Start tapping! 10 seconds go!", reply_markup=markup)
 
     await asyncio.sleep(10)
     round_active = False
-    await msg.edit_text("? Time�s up! Calculating results...")
+    await msg.edit_text("⏱ Time’s up! Calculating results...")
 
     if not players:
         await update.message.reply_text("No registered players.")
@@ -66,7 +66,7 @@ async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if len(tied) == 1:
         winner = tied[0]
     else:
-        # if tie ? who reached score earliest (first5)
+        # if tie → who reached score earliest (first5)
         winner = min(tied, key=lambda u: players[u]["first5"])
 
     w_phone = players[winner]["phone"]
@@ -74,11 +74,11 @@ async def startgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     result = "\n".join([f"@{u}: {d['taps']} taps" for u, d in players.items()])
     await update.message.reply_text(
-        f"?? Winner: @{winner}\n?? Mpesa: {w_phone}\n?? Taps: {w_taps}\n\n?? Results:\n{result}"
+        f"🏆 Winner: @{winner}\n📞 Mpesa: {w_phone}\n💥 Taps: {w_taps}\n\n📊 Results:\n{result}"
     )
 
-    # ?? Remove all non-admin players
-    await update.message.reply_text("?? Clearing players... next round coming soon!")
+    # 🧹 Remove all non-admin players
+    await update.message.reply_text("🧹 Clearing players... next round coming soon!")
     chat = await context.bot.get_chat(chat_id)
     admins = [admin.user.id for admin in await chat.get_administrators()]
     async for member in context.bot.get_chat_administrators(chat_id):
@@ -117,7 +117,7 @@ async def tap(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "/register 07XXXXXXXX � register with phone\n/startgame � admin starts round"
+        "/register 07XXXXXXXX — register with phone\n/startgame — admin starts round"
     )
 
 app.add_handler(CommandHandler("register", register))
